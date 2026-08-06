@@ -3,8 +3,7 @@ namespace data_odev
     public class Program
     {
         // Kurallar (odev gereksinimleri) sabit olarak tutuluyor.
-        private const int MIN_NODE = 3;
-        private const int MAX_NODE = 20;
+        private const int NODE_SAYISI = 25;     // Odev: tam 25 sayi eklenecek.
         private const int MIN_SAYI = -100;
         private const int MAX_SAYI = 100;
 
@@ -24,14 +23,6 @@ namespace data_odev
         {
             YazdirBaslik();
 
-            // 1) Kullanicidan kac node olusturulacagini al (3-20 arasi, dogrulamali).
-            int nodeSayisi = InputHelper.IntAlAralikta(
-                $"Kac node'luk bir liste olusturmak istersiniz? ({MIN_NODE}-{MAX_NODE}): ",
-                MIN_NODE,
-                MAX_NODE);
-
-            Console.WriteLine($"\n{nodeSayisi} adet node olusturulacak. Sayilar rastgele uretiliyor...\n");
-
             var liste = new DoublyLinkedList();
 
             // Sayilarin uretildigi sirayi ayrica tutuyoruz. Bagli liste sirali
@@ -39,16 +30,16 @@ namespace data_odev
             // ayri bir listede saklamamiz gerekiyor.
             var uretimSirasi = new List<int>();
 
-            // 2) Node sayisi kadar don. Her adimda:
-            //    once TEK bir rastgele sayi uret, sonra o sayi icin node olusturup
-            //    sirali sekilde ekle, sonra listeyi goster. Bir sonraki sayi ancak
-            //    bu adim bitince uretilir.
-            for (int i = 1; i <= nodeSayisi; i++)
+            // ============ 1. BOLUM: EKLEME METODU ============
+            // 25 kez don. Her adimda once TEK bir rastgele sayi uret, sonra
+            // o sayiyi sirali (kucukten buyuge) sekilde ekle, sonra listeyi goster.
+            // Bir sonraki sayi ancak bu adim bitince uretilir.
+            for (int i = 1; i <= NODE_SAYISI; i++)
             {
                 int sayi = RastgeleSayiUret();
                 uretimSirasi.Add(sayi);
 
-                Console.WriteLine($"--- Adim {i}/{nodeSayisi} ---");
+                Console.WriteLine($"--- Adim {i}/{NODE_SAYISI} ---");
                 Console.WriteLine($"Uretilen sayi : {sayi}");
 
                 liste.SortedInsert(sayi);
@@ -57,28 +48,89 @@ namespace data_odev
                 Console.WriteLine();
             }
 
-            // 3) Sonuclari goster: cift yonlulugu ispatlamak icin ileri ve geri yaz.
-            YazdirSonuc(liste, uretimSirasi);
+            YazdirEklemeSonucu(liste, uretimSirasi);
+
+            // ============ 2. BOLUM: KES / YAPISTIR METODU ============
+            KesYapistir(liste);
+
+            // Program bitince pencerenin hemen kapanmamasi icin bekle.
+            Console.WriteLine("\nCikmak icin bir tusa basin...");
+            Console.ReadKey();
+        }
+
+        // Kullanicidan bir indis alip o node'u koparir, ardindan yeni bir hedef
+        // indis alip node'u iki komsunun arasina yerlestirir.
+        private static void KesYapistir(DoublyLinkedList liste)
+        {
+            Console.WriteLine();
+            Console.WriteLine("========================================================");
+            Console.WriteLine("   KES / YAPISTIR METODU");
+            Console.WriteLine("========================================================");
+            Console.WriteLine("Bir sayiyi bulundugu indisten cikarip, listede baska");
+            Console.WriteLine("iki sayinin arasina (yeni bir indise) tasiyacagiz.");
+            Console.WriteLine("Not: Bu islem siralamayi bozabilir; amac tasima islemidir.\n");
+
+            // Indisli gosterim: kullanici hangi indisi sececegini gorsun.
+            Console.WriteLine($"Mevcut liste (indisli):\n  {liste.ToStringWithIndices()}\n");
+
+            // 1) Cikarilacak node'un indisini al (0 .. Count-1).
+            int cikarIndis = InputHelper.IntAlAralikta(
+                $"Cikarilacak node'un indisi (0-{liste.Count - 1}): ",
+                0,
+                liste.Count - 1);
+
+            // Node'u kopar (kes). Cikarilan degeri saklıyoruz ki tekrar ekleyelim.
+            Node kopan = liste.RemoveAt(cikarIndis);
+            Console.WriteLine($"\n-> Indis {cikarIndis}'teki sayi cikarildi: {kopan.Value}");
+            Console.WriteLine($"Cikarma sonrasi liste:\n  {liste.ToStringWithIndices()}\n");
+
+            // 2) Hedef indisi al. Artik listede Count node var; ekleme icin
+            //    gecerli aralik 0 .. Count (Count = en sona ekle).
+            int hedefIndis = InputHelper.IntAlAralikta(
+                $"Sayinin yerlestirilecegi yeni indis (0-{liste.Count}): ",
+                0,
+                liste.Count);
+
+            // Kopan node'u hedef indise yapistir.
+            liste.InsertNodeAt(hedefIndis, kopan);
+            Console.WriteLine($"\n-> {kopan.Value} sayisi {hedefIndis}. indise yerlestirildi.\n");
+
+            YazdirKesYapistirSonucu(liste);
         }
 
         private static void YazdirBaslik()
         {
             Console.WriteLine("========================================================");
-            Console.WriteLine("   CIFT YONLU BAGLI LISTE - SIRALI EKLEME UYGULAMASI");
+            Console.WriteLine("   CIFT YONLU BAGLI LISTE - SIRALI EKLEME + KES/YAPISTIR");
             Console.WriteLine("========================================================");
-            Console.WriteLine($"- Olusturulacak node sayisi: {MIN_NODE} ile {MAX_NODE} arasinda olabilir.");
+            Console.WriteLine($"- Toplam {NODE_SAYISI} adet sayi uretilip listeye eklenecek.");
             Console.WriteLine($"- Uretilecek sayilar: {MIN_SAYI} ile {MAX_SAYI} arasinda (rastgele).");
             Console.WriteLine("- Sayilar listeye her zaman kucukten buyuge sirali eklenir.");
+            Console.WriteLine("- Ardindan secilen bir sayi kesilip baska bir indise yapistirilir.");
             Console.WriteLine("========================================================\n");
         }
 
-        private static void YazdirSonuc(DoublyLinkedList liste, List<int> uretimSirasi)
+        private static void YazdirEklemeSonucu(DoublyLinkedList liste, List<int> uretimSirasi)
         {
             Console.WriteLine("========================================================");
-            Console.WriteLine("   SONUC");
+            Console.WriteLine("   EKLEME SONUCU");
             Console.WriteLine("========================================================");
             Console.WriteLine($"Toplam node sayisi : {liste.Count}");
             Console.WriteLine($"Uretim sirasi      : [ {string.Join(", ", uretimSirasi)} ]");
+            Console.WriteLine($"Ileri  (Head->Tail): {liste.ToStringForward()}");
+            Console.WriteLine($"Geri   (Tail->Head): {liste.ToStringBackward()}");
+            Console.WriteLine($"Head degeri        : {(liste.Head != null ? liste.Head.Value.ToString() : "-")}");
+            Console.WriteLine($"Tail degeri        : {(liste.Tail != null ? liste.Tail.Value.ToString() : "-")}");
+            Console.WriteLine("========================================================");
+        }
+
+        private static void YazdirKesYapistirSonucu(DoublyLinkedList liste)
+        {
+            Console.WriteLine("========================================================");
+            Console.WriteLine("   KES / YAPISTIR SONUCU");
+            Console.WriteLine("========================================================");
+            Console.WriteLine($"Toplam node sayisi : {liste.Count}");
+            Console.WriteLine($"Indisli liste      : {liste.ToStringWithIndices()}");
             Console.WriteLine($"Ileri  (Head->Tail): {liste.ToStringForward()}");
             Console.WriteLine($"Geri   (Tail->Head): {liste.ToStringBackward()}");
             Console.WriteLine($"Head degeri        : {(liste.Head != null ? liste.Head.Value.ToString() : "-")}");
