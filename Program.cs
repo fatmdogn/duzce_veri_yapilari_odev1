@@ -21,7 +21,7 @@ namespace data_odev
 
         public static void Main()
         {
-            YazdirBaslik();
+           
 
             var liste = new DoublyLinkedList();
 
@@ -98,17 +98,7 @@ namespace data_odev
             YazdirKesYapistirSonucu(liste);
         }
 
-        private static void YazdirBaslik()
-        {
-            Console.WriteLine("========================================================");
-            Console.WriteLine("   CIFT YONLU BAGLI LISTE - SIRALI EKLEME + KES/YAPISTIR");
-            Console.WriteLine("========================================================");
-            Console.WriteLine($"- Toplam {NODE_SAYISI} adet sayi uretilip listeye eklenecek.");
-            Console.WriteLine($"- Uretilecek sayilar: {MIN_SAYI} ile {MAX_SAYI} arasinda (rastgele).");
-            Console.WriteLine("- Sayilar listeye her zaman kucukten buyuge sirali eklenir.");
-            Console.WriteLine("- Ardindan secilen bir sayi kesilip baska bir indise yapistirilir.");
-            Console.WriteLine("========================================================\n");
-        }
+      
 
         private static void YazdirEklemeSonucu(DoublyLinkedList liste, List<int> uretimSirasi)
         {
