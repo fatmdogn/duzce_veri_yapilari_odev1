@@ -63,12 +63,7 @@ namespace data_odev
         private static void KesYapistir(DoublyLinkedList liste)
         {
             Console.WriteLine();
-            Console.WriteLine("========================================================");
-            Console.WriteLine("   KES / YAPISTIR METODU");
-            Console.WriteLine("========================================================");
-            Console.WriteLine("Bir sayiyi bulundugu indisten cikarip, listede baska");
-            Console.WriteLine("iki sayinin arasina (yeni bir indise) tasiyacagiz.");
-            Console.WriteLine("Not: Bu islem siralamayi bozabilir; amac tasima islemidir.\n");
+           
 
             // Indisli gosterim: kullanici hangi indisi sececegini gorsun.
             Console.WriteLine($"Mevcut liste (indisli):\n  {liste.ToStringWithIndices()}\n");
